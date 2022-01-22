@@ -7,7 +7,11 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css">
   <link rel="stylesheet" href="https://static.pingendo.com/bootstrap/bootstrap-4.3.1.css">
 
-
+  <style>
+    .active {
+      display: flex;
+    }
+  </style>
 </head>
 
 <body>
@@ -29,7 +33,8 @@
       </div>
     </div>
   </div>
-  <div class="py-5">
+
+  <div class="py-5" id="posts-list" >
     <div class="container">
       <div class="row">
         <div class="col-md-12">
@@ -64,6 +69,28 @@
     </div>
   </div>
 
+  <div class="py-5" id="posts-detail" style="display: none">
+    <div class="container" id="detail-box">
+      <div class="row" >
+        <div class="col-md-6" >
+          <h2 class="pl-1">제목</h2>
+        </div>
+        <div class="col-md-6 text-right"><a class="btn btn-primary" href="#">목록</a></div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">작성자 :</div>
+            <div class="card-header">작성일 :</div>
+            <div class="card-body h-50">
+              <h4>내용</h4>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="modal fade" id="myModal" data-backdrop="static" data-keyboard="false" tabindex="-1"
        aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -90,7 +117,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-primary" onclick="savePosts()">저장</button>
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
+          <button type="button" class="btn btn-danger" data-dismiss="modal">취소</button>
         </div>
       </div>
     </div>
@@ -103,6 +130,9 @@
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 
   <script>
+
+
+
     $(document).ready(function (){
       getPosts();
     })
@@ -125,7 +155,7 @@
             let temp_html = `<tr>
                               <th scope="row">${id}</th>
                               <td>${author}</td>
-                              <td><a href="/detail/${id}">${title}</a></td>
+                              <td><a href="javascript:void(0)" onclick="showDetail(${id})">${title}</a> </td>
                               <td>${createdAt}</td>
                             </tr>`;
 
@@ -133,6 +163,51 @@
           }
         }
       })
+    }
+
+    function showDetail(id) {
+      $('#posts-list').hide();
+      $('#posts-detail').show();
+
+      $.ajax({
+          type: 'GET',
+          url: `/api/posts/${id}`,
+          success: function (response) {
+              $('#detail-box').empty();
+
+              let title = response['title'];
+              let author = response['author'];
+              let contents = response['contents'];
+              let createdAt = response['createdAt'];
+
+              let temp_html = `<div class="row">
+                                  <div class="col-md-6" >
+                                    <h2 class="pl-1">${title}</h2>
+                                  </div>
+                                  <div class="col-md-6 text-right">
+                                    <button class="btn btn-primary" type="button" onclick="showList()">목록</button>
+                                  </div>
+                                </div>
+                                <div class="row">
+                                  <div class="col-md-12">
+                                    <div class="card">
+                                      <div class="card-header">작성자 : ${author}</div>
+                                      <div class="card-header">작성일 : ${createdAt}</div>
+                                      <div class="card-body h-50">
+                                        <h4>${contents}</h4>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>`;
+
+              $('#detail-box').append(temp_html);
+          }
+      })
+    }
+
+    function showList() {
+      $('#posts-detail').hide();
+      $('#posts-list').show();
     }
 
     function savePosts() {
