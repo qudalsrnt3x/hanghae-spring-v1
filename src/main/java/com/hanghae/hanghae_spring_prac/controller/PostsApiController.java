@@ -4,8 +4,11 @@ import com.hanghae.hanghae_spring_prac.domain.Posts;
 import com.hanghae.hanghae_spring_prac.domain.PostsRepository;
 import com.hanghae.hanghae_spring_prac.domain.PostsRequestDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -21,10 +24,20 @@ public class PostsApiController {
     }
 
     @PostMapping("/posts")
-    public Long savePosts(@RequestBody PostsRequestDto postsRequestDto) {
+    public ResponseEntity<Posts> savePosts(@RequestBody PostsRequestDto postsRequestDto) {
         Posts posts = new Posts(postsRequestDto);
 
-        return postsRepository.save(posts).getId();
+        Posts savedPosts = postsRepository.save(posts);
+
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(savedPosts.getId())
+                .toUri();
+
+        // response header에 Location: http://localhost:8080/posts/1  으로 확인 가능
+
+        return ResponseEntity.created(location).build();
+
     }
 
     @GetMapping("/posts/{id}")
