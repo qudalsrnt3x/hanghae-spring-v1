@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>로그인페이지</title>
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -18,16 +18,19 @@
                 <p class="mb-4 lead">Seem to dwell in my soul and absorb its power, like the form of a beloved mistress, then I often think with longing, Oh, would I could describe these conceptions.</p>
             </div>
             <div class="p-5 col-md-5">
-                <form action="/login" method="post">
+                <form action="/join" method="post">
                     <div class="form-group"> <label>Username</label>
-                        <input name="username" class="form-control" placeholder="write your username" required="required" type="text">
+                        <input name="username" class="form-control" placeholder="username" required="required" type="text">
                     </div>
                     <div class="form-group">
                         <label>Password</label>
-                        <input name="password" type="password" class="form-control" placeholder="write your password" required="required">
+                        <input name="password" type="password" class="form-control" placeholder="password" required="required">
                     </div>
-                    <button type="submit" class="btn mt-4 btn-block p-2 btn-outline-primary"><b>로그인</b></button>
-                    <a href="/joinForm" style="text-align: center">회원가입</a>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input name="email" type="email" class="form-control" placeholder="Email" required="required">
+                    </div>
+                    <button type="submit" class="btn mt-4 btn-block p-2 btn-outline-primary"><b>회원가입</b></button>
                 </form>
             </div>
         </div>
