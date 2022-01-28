@@ -11,6 +11,8 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 @RequiredArgsConstructor
 @Service
 public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
@@ -25,9 +27,23 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
 
         OAuth2User oAuth2User = super.loadUser(userRequest);
 
+
+
         // 강제로 회원가입 진행
-        String provider = userRequest.getClientRegistration().getRegistrationId(); // google
-        String providerId = oAuth2User.getAttribute("sub");
+        OAuth2UserInfo userInfo = null;
+
+        if (userRequest.getClientRegistration().getRegistrationId().equals("google")) {
+            System.out.println("구글 로그인 요청");
+            userInfo = new GoogleUserInfo(oAuth2User.getAttributes());
+        } else if (userRequest.getClientRegistration().getRegistrationId().equals("naver")) {
+            System.out.println("네이버 로그인 요청");
+            userInfo = new NaverUserInfo((Map<String, Object>) oAuth2User.getAttributes().get("response"));
+        } else {
+            System.out.println("우리는 구글과 네이버만 지원");
+        }
+
+        String provider = userInfo.getProvider();
+        String providerId = userInfo.getProviderId();
         String username = provider+"_"+providerId; // google_12432185730587349
         String password = passwordEncoder.encode("겟인데어"); // 사용하진 않을 것
         String email = oAuth2User.getAttribute("email");
@@ -49,7 +65,7 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
 
             userRepository.save(userEntity);
         } else {
-
+            System.out.println("이미 회원이 만들어졌다.");
         }
 
         return new PrincipalDetails(userEntity, oAuth2User.getAttributes());
